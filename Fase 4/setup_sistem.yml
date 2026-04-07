@@ -1,0 +1,47 @@
+---
+- name: Fase 3 - Automasi Konfigurasi Dasar dan Layanan
+  hosts: router
+  gather_facts: false
+
+  tasks:
+    - name: 1. Mengubah Hostname
+      community.routeros.command:
+        commands:
+          - /system identity set name="{{ inventory_hostname }}"
+
+    - name: 2. Konfigurasi DNS Server
+      community.routeros.command:
+        commands:
+          - /ip dns set servers=8.8.8.8,8.8.4.4 allow-remote-requests=yes
+
+    - name: 3. Konfigurasi NTP Client
+      community.routeros.command:
+        commands:
+          - /system ntp client set enabled=yes servers=0.id.pool.ntp.org,1.id.pool.ntp.org
+
+    - name: 4. Membuat User Management Baru (Keamanan)
+      community.routeros.command:
+        commands:
+          - /user add name=netdevops password=amanaman group=full
+
+    - name: 5. Konfigurasi Routing (Default Route ke Internet)
+      community.routeros.command:
+        commands:
+          - /ip route add dst-address=0.0.0.0/0 gateway=192.168.11.1
+      ignore_errors: true 
+
+    - name: 6. Konfigurasi NAT/Firewall (Masquerade)
+      community.routeros.command:
+        commands:
+          - /ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade
+
+    - name: 7. Pengujian/Validasi Koneksi (Ping ke DNS Google)
+      community.routeros.command:
+        commands:
+          - /ping 8.8.8.8 count=4
+      register: hasil_ping
+
+    - name: 8. Menampilkan Hasil Validasi di Terminal
+      debug:
+        msg: "{{ hasil_ping.stdout_lines }}"
+
