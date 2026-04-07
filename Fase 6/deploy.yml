@@ -1,0 +1,17 @@
+name: CI/CD Zero-Touch Provisioning
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  automasi-jaringan:
+    runs-on: self-hosted
+
+    steps:
+      - name: 1. Mengambil kode terbaru dari GitHub ke WSL
+        uses: actions/checkout@v4
+
+      - name: 2. Menjalankan Ansible Playbook (Setup & Layanan)
+        run: ansible-playbook -i hosts.ini setup_sistem.yml
