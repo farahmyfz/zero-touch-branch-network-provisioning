@@ -1,0 +1,2 @@
+Setelah router terkonfigurasi otomatis dan terhubung ke internet, infrastruktur perlu diawasi sehingga perlu membuat sebuah dashboart monitoring terpusat dengan cara memperbarui script Ansible untuk men-setup parameter Syslog dan SNMP pada kedua router. Log dan metrik ini diarahkan ke sebuah server monitoring terpusat. 
+Konfigurasi monitoring berhasil di push, dan PC kontrol dapat menerima log message dari router (misalnya saat ada interface yang down atau percobaan login yang gagal)
