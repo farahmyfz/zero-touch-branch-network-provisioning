@@ -1,4 +1,0 @@
-Menulis playbook ansible/skrip automasi untuk melakukan push konfigurasi secara serentak ke kedua router yang bisa melakukan
-1. Mengubah host name 
-2. Konfigurasi DNS Server, NTP Server, dan User Management 
-3. Mengamankan port dan memberikan IP Address pada interface yang mengarah ke jaringan lokal
