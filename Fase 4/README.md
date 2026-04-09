@@ -1,5 +1,5 @@
 ## Fase 4. Routing, NAT, & Validasi
-
+---
 Membuat jalur internet untuk klien dibawah router (menambahkan tugas lanjutan dalam script automasi)
 1. Menambahkan default Router yang mengarah ke IP Switch (file bernama "setup_sistem.yml" no 5)
 2. Mengonfigurasi Masquerade/NAT agar jaringan lokal di bawah router bisa mengakses internet melewati switch (file bernama "setup_sistem.yml" no 6)
