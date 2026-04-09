@@ -17,7 +17,7 @@ nano setup_sistem.yml
 ```
 **3. Menulis Code Automatisasi Configurasi Dasar & Layanan**
 ```routeros
-File setup_sistem.yml
+*File setup_sistem.yml*
 ```
 ```text
 project/
