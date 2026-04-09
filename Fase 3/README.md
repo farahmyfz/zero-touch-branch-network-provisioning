@@ -1,4 +1,4 @@
-## FASE 3: Automasi Konfigurasi Dasar & Layanan
+# FASE 3: Automasi Konfigurasi Dasar & Layanan
 ---
 Menulis playbook ansible/skrip automasi untuk melakukan push konfigurasi secara serentak ke kedua router yang mempunyai kemampuan untuk:
 1. Mengubah host name secara bersamaan router 1 dan router 2 (file bernama "hosts.ini")
