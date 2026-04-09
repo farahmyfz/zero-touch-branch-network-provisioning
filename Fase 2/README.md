@@ -53,16 +53,12 @@ ssh user@ip_address_target
 ---
 
 ## Ansible Inventory:
-**1. Buat file bernama hosts.ini di root folder proyek**
+Buat file bernama hosts.ini di root folder proyek
 
-[router]
+Struktur Repositori:
+```text
+project/
+│
+├── hosts.ini
 
-R1 ansible_host=192.168.10.1 ansible_user=admin ansible_password=admin
 
-R2 ansible_host=192.168.20.1 ansible_user=auto ansible_password=admin
-
-[router:vars]
-
-ansible_connection=network_cli
-
-ansible_network_os=routeros
