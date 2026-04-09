@@ -1,0 +1,4 @@
+actions-runner/
+backups/
+*.rsc
+*.log

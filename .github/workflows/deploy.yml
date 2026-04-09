@@ -1,0 +1,19 @@
+name: NetDevOps Automation Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Ini perintah untuk mencari Runner di laptopmu
+    steps:
+      - name: Ambil Kode Terbaru dari GitHub
+        uses: actions/checkout@v4
+
+      - name: Eksekusi Ansible setup_sistem.yml
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i hosts.ini setup_sistem.yml \
+            -e "ansible_user=admin" \
+            -e "ansible_password=admin"

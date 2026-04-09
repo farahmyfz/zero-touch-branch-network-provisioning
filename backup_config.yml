@@ -1,0 +1,22 @@
+---
+- name: Fase 5 - Automasi Backup Konfigurasi Router
+  hosts: router
+  gather_facts: false
+
+  tasks:
+    - name: 1. Menarik konfigurasi dari MikroTik
+      community.routeros.command:
+        commands:
+          - /export
+      register: hasil_export
+
+    - name: 2. Menyimpan hasil export ke dalam file di PC
+      ansible.builtin.copy:
+        content: "{{ hasil_export.stdout[0] }}"
+        # - ./backups/ : Simpan di folder backups
+        # - {{ inventory_hostname }} : Akan otomatis berubah jadi R1 atau R2
+        # - {{ '%Y%m%d_%H%M%S' | strftime }} : Akan otomatis mencetak TahunBulanTanggal_JamMenitDetik saat ini
+        # - .rsc : Ekstensi file script standar MikroTik
+        dest: "./backups/backup_{{ inventory_hostname }}_{{ '%Y%m%d_%H%M%S' | strftime }}.rsc"
+      # 'delegate_to: localhost', memaksa Ansible membuat file tersebut di PC 1 (PC Kontrol).
+      delegate_to: localhost
