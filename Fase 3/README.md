@@ -5,5 +5,7 @@ Menulis playbook ansible/skrip automasi untuk melakukan push konfigurasi secara 
 2. Konfigurasi DNS Server, NTP Server, dan User Management (file bernama "setup_sistem.yml")
 3. Mengamankan port dan memberikan IP Address pada interface yang mengarah ke jaringan lokal
 
-### Pada WSL 
+*pada WSL*
+### Kasuk Ke Folder Proyek 
 ---
+```
