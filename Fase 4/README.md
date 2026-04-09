@@ -11,7 +11,7 @@ Membuat jalur internet untuk klien dibawah router (menambahkan tugas lanjutan da
 ```routeros
 cd proyek
 ```
-**2. Buat Fofer Baru bernama "setup_sistem.yml"**
+**2. Masuk ke Folder bernama "setup_sistem.yml"**
 ```routeros
 nano setup_sistem.yml
 ```
