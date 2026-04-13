@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-     - name: 0. Konfigurasi IP Interface
+    - name: 0. Konfigurasi IP Interface
       community.routeros.command:
         commands:
           - /ip address add address=192.168.11.10/24 interface=ether1 comment="WAN"
@@ -30,6 +30,7 @@
       community.routeros.command:
         commands:
           - /user add name=netdevops password=amanaman group=full
+      ignore_errors: true
 
     - name: 5. Konfigurasi Routing (Default Route ke Internet)
       community.routeros.command:
@@ -40,7 +41,6 @@
     - name: 5.5 Tambahkan Rute ke LAN R2 via WAN
       community.routeros.command:
         commands:
-          # Gateway-nya adalah IP WAN milik R2 (sesuai gambar)
           - /ip route add dst-address=192.168.20.0/24 gateway=192.168.11.153 comment="Rute ke R2"
       ignore_errors: true
 
@@ -64,7 +64,7 @@
         commands:
           - /snmp set enabled=yes contact="Admin NetDevOps" location="Lab Data Center"
 
-     - name: 10. Konfigurasi Syslog (Remote Logging)
+    - name: 10. Konfigurasi Syslog (Remote Logging)
       community.routeros.command:
         commands:
           - /system logging action set [find name="remote"] target=remote remote=192.168.10.10 remote-port=5140
@@ -84,3 +84,4 @@
         content: "{{ hasil_export.stdout[0] }}"
         dest: "./backups/backup_{{ inventory_hostname }}_{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}.rsc"
       delegate_to: localhost
+
