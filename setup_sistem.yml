@@ -79,6 +79,12 @@
           - /export
       register: hasil_export
 
+    - name: 11.5 Memastikan folder backup ada
+      ansible.builtin.file:
+        path: "./backups"
+        state: directory
+      delegate_to: localhost
+
     - name: 12. Menyimpan hasil export ke laptop
       ansible.builtin.copy:
         content: "{{ hasil_export.stdout[0] }}"
