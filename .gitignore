@@ -2,3 +2,6 @@ actions-runner/
 backups/
 *.rsc
 *.log
+
+Dashboard/backend/.env
+**/.env
