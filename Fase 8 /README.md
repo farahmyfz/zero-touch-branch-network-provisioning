@@ -14,7 +14,7 @@ Jika router masih bisa diakses, gunakan perintah berikut:
     ```routeros
     /system reset-configuration
     ```
-* **Reset Total (No Defaults) - *Direkomendasikan untuk ZTP*:**
+* **Reset Total (No Defaults)**
     ```routeros
     /system reset-configuration no-defaults=yes skip-backup=yes
     ```
