@@ -1,4 +1,3 @@
----
 - name: Fase 3 - Automasi Konfigurasi Dasar dan Layanan
   hosts: router
   gather_facts: false
