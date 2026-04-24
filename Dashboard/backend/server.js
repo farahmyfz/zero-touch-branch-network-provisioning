@@ -8,49 +8,80 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // PENTING: Agar req.body tidak undefined
+
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, { 
+    cors: { origin: "*" } 
+});
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const syslogServer = dgram.createSocket('udp4');
 
-// 1. Listen Syslog dari MikroTik (Port 514)
+// --- 1. MONITORING: Syslog Listener (MikroTik) ---
 syslogServer.on('message', (msg, rinfo) => {
     const logRaw = msg.toString();
     
-    // DEBUG: Munculkan APAPUN yang masuk tanpa filter
-    console.log(`--- PAKET MASUK dari ${rinfo.address} ---`);
-    console.log(`Isi: ${logRaw}`);
+    // Log ke Konsol Backend (Nuansa Telkom Monitor)
+    console.log(`[TELKOM-SYS] Packet from ${rinfo.address} | Message: ${logRaw}`);
 
-    // Kirim ke Svelte agar kita tahu ada aktivitas
-    io.emit('network-alert', {
-        message: "Log Terdeteksi",
-        raw: logRaw,
-        time: new Date().toLocaleTimeString()
-    });
-
-    if (logRaw.includes("logged in") || logRaw.includes("changed by")) {
-        console.log("🎯 ALERT MATCHED!");
+    // Klasifikasi Alert sederhana
+    let alertType = "INFO";
+    if (logRaw.includes("logged in") || logRaw.includes("changed by") || logRaw.includes("critical")) {
+        alertType = "SECURITY";
+        console.log("🎯 ALERT: Security Activity Detected!");
     }
+
+    // Kirim ke Svelte via Socket.io
+    io.emit('network-alert', {
+        type: alertType,
+        message: logRaw,
+        source: rinfo.address,
+        time: new Date().toLocaleTimeString('id-ID')
+    });
 });
 
 syslogServer.bind(5514, '0.0.0.0', () => {
-    console.log("Kuping Syslog aktif di SEMUA interface port 5514");
+    console.log("📡 [TELKOM] Syslog Listener Active on Port 5514");
 });
 
-// 2. API Push Config 
-app.post('/api/sync-router', async (req, res) => {
+// --- 2. PROVISIONING: Save & Deploy API ---
+app.post('/api/save-and-deploy', async (req, res) => {
+    const { hosts, yaml } = req.body;
+    const owner = 'farahmyfz';
+    const repo = 'zero-touch-branch-network-provisioning';
+
     try {
+        console.log("🛠️ [TELKOM-OPS] Syncing Configuration to GitHub...");
+        
+        const updateFile = async (path, content, message) => {
+            const { data: file } = await octokit.repos.getContent({ owner, repo, path });
+            return octokit.repos.createOrUpdateFileContents({
+                owner, repo, path,
+                message,
+                content: Buffer.from(content).toString('base64'),
+                sha: file.sha
+            });
+        };
+
+        await updateFile('hosts.ini', hosts, 'Update via Telkom Control Center');
+        await updateFile('setup_sistem.yml', yaml, 'Update via Telkom Control Center');
+
+        console.log(" [TELKOM-OPS] Triggering GitHub Actions Pipeline...");
         await octokit.actions.createWorkflowDispatch({
-            owner: 'farahmyfz',
-            repo: '-zero-touch-branch-network-provisioning',
+            owner, repo,
             workflow_id: 'deploy.yml',
             ref: 'main',
+            inputs: { target_router: 'R1' }
         });
-        res.json({ message: "Robot GitHub jalan!" });
+
+        res.json({ status: "success", message: "Deployment Pipeline Started!" });
     } catch (error) {
-        res.status(500).send(error.message);
+        console.error("❌ [ERROR]", error.message);
+        res.status(500).json({ status: "error", message: error.message });
     }
 });
 
-server.listen(5000, () => console.log("Otak Dashboard + Socket jalan di port 5000"));
+server.listen(5000, () => {
+    console.log("🔴 [TELKOM] Control Center Backend Running on Port 5000");
+});
