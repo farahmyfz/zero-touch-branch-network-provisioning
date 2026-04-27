@@ -38,16 +38,26 @@ Setelah router dalam kondisi kosong, kita perlu memberikan "jalur masuk" awal ag
 1.  Buka **WinBox** dan masuk melalui **MAC Address**.
 2.  Gunakan stelan default: User `admin` dan Password `(kosong)`.
 3.  Berikan IP Address sementara pada port yang terhubung ke jaringan manajemen (contoh: `ether2`).
+4.  Ubah Password yang tadinya `(kosong)` menjadi `admin`.
+
 
 **Metode GUI:**
 * Buka menu **IP** > **Addresses**.
 * Klik **[+]** dan masukkan IP sesuai inventori (Contoh: `192.168.10.1/24`).
 * Pilih interface **ether2**, lalu klik **OK**.
+* Buka menu **Sistem** > **Password**
+* Kosongkan untuk Old Password
+* Ini bagian **New Password** dan **Confirm Password** dengan:
+```routeros
+admin
+```
 
 **Metode Terminal:**
 ```routeros
 /ip address add address=192.168.10.1/24 interface=ether2
+/user set admin password=admin
 ```
+
 
 ## 3. Verifikasi Konektivitas (Pre-Check)
 Sebelum menjalankan proses restorasi otomatis, pastikan laptop sudah dapat terhubung dengan router pengganti melalui jaringan IP.
