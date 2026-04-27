@@ -4,13 +4,13 @@
   gather_facts: false
 
   tasks:
-     - name: 0. Konfigurasi IP Interface
+    - name: 0. Konfigurasi IP Interface
       community.routeros.command:
         commands:
           - /ip address add address=192.168.11.10/24 interface=ether1 comment="WAN"
           - /ip address add address=192.168.10.1/24 interface=ether2 comment="LAN_to_R2"
       ignore_errors: true
-          - /ip address add address=192.168.10.50/24 interface=ether3 comment="LAN_to_R2"
+          - /ip address add address=192.168.10.135/24 interface=ether4 comment="LAN_to_R2"
       ignore_errors: true
 
     - name: 1. Mengubah Hostname
@@ -32,6 +32,7 @@
       community.routeros.command:
         commands:
           - /user add name=netdevops password=amanaman group=full
+      ignore_errors: true
 
     - name: 5. Konfigurasi Routing (Default Route ke Internet)
       community.routeros.command:
@@ -42,7 +43,6 @@
     - name: 5.5 Tambahkan Rute ke LAN R2 via WAN
       community.routeros.command:
         commands:
-          # Gateway-nya adalah IP WAN milik R2 (sesuai gambar)
           - /ip route add dst-address=192.168.20.0/24 gateway=192.168.11.153 comment="Rute ke R2"
       ignore_errors: true
 
@@ -66,7 +66,7 @@
         commands:
           - /snmp set enabled=yes contact="Admin NetDevOps" location="Lab Data Center"
 
-     - name: 10. Konfigurasi Syslog (Remote Logging)
+    - name: 10. Konfigurasi Syslog (Remote Logging)
       community.routeros.command:
         commands:
           - /system logging action set [find name="remote"] target=remote remote=192.168.10.10 remote-port=5140
@@ -80,6 +80,12 @@
         commands:
           - /export
       register: hasil_export
+
+    - name: 11.5 Memastikan folder backup ada
+      ansible.builtin.file:
+        path: "./backups"
+        state: directory
+      delegate_to: localhost
 
     - name: 12. Menyimpan hasil export ke laptop
       ansible.builtin.copy:
