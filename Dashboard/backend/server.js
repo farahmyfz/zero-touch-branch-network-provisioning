@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(express.json()); // PENTING: Agar req.body tidak undefined
+app.use(express.json()); 
 
 const server = http.createServer(app);
 const io = new Server(server, { 
@@ -22,14 +22,14 @@ const syslogServer = dgram.createSocket('udp4');
 syslogServer.on('message', (msg, rinfo) => {
     const logRaw = msg.toString();
     
-    // Log ke Konsol Backend (Nuansa Telkom Monitor)
+    // Log ke Konsol Backend 
     console.log(`[TELKOM-SYS] Packet from ${rinfo.address} | Message: ${logRaw}`);
 
     // Klasifikasi Alert sederhana
     let alertType = "INFO";
     if (logRaw.includes("logged in") || logRaw.includes("changed by") || logRaw.includes("critical")) {
         alertType = "SECURITY";
-        console.log("🎯 ALERT: Security Activity Detected!");
+        console.log("ALERT: Security Activity Detected!");
     }
 
     // Kirim ke Svelte via Socket.io
@@ -42,7 +42,7 @@ syslogServer.on('message', (msg, rinfo) => {
 });
 
 syslogServer.bind(5514, '0.0.0.0', () => {
-    console.log("📡 [TELKOM] Syslog Listener Active on Port 5514");
+    console.log("[TELKOM] Syslog Listener Active on Port 5514");
 });
 
 // --- 2. PROVISIONING: Save & Deploy API ---
@@ -52,7 +52,7 @@ app.post('/api/save-and-deploy', async (req, res) => {
     const repo = 'zero-touch-branch-network-provisioning';
 
     try {
-        console.log("🛠️ [TELKOM-OPS] Syncing Configuration to GitHub...");
+        console.log("[TELKOM-OPS] Syncing Configuration to GitHub...");
         
         const updateFile = async (path, content, message) => {
             const { data: file } = await octokit.repos.getContent({ owner, repo, path });
@@ -64,8 +64,8 @@ app.post('/api/save-and-deploy', async (req, res) => {
             });
         };
 
-        await updateFile('hosts.ini', hosts, 'Update via Telkom Control Center');
-        await updateFile('setup_sistem.yml', yaml, 'Update via Telkom Control Center');
+        await updateFile('hosts.ini', hosts, 'Update hosts.ini via Dashboard');
+        await updateFile('setup_sistem.yml', yaml, 'Update setup_sistem.yml via Dashboard');
         
         res.json({ status: "success", message: "Configuration Updated & Pipeline Started!" });
     } catch (error) {
@@ -75,5 +75,5 @@ app.post('/api/save-and-deploy', async (req, res) => {
 });
 
 server.listen(5000, () => {
-    console.log("🔴 [TELKOM] Control Center Backend Running on Port 5000");
+    console.log("[TELKOM] Control Center Backend Running on Port 5000");
 });

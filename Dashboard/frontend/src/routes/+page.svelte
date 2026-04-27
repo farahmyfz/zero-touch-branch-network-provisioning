@@ -3,37 +3,33 @@
   import { io } from 'socket.io-client';
 
   // State Konten File
-  let hostsContent = "[router]\nR1 ansible_host=192.168.10.1\nansible_user=admin\nansible_password=admin\n\n[router:vars]\nansible_connection=network_cli\nansible_network_os=routeros";
+  let hostsContent = "[router]\nR1 ansible_host=192.168.10.1 ansible_user=admin ansible_password=admin \n\n[router:vars]\nansible_connection=network_cli\nansible_network_os=routeros";
   let yamlContent = "--- \n- name: Fase 3 Konfigurasi...\n  hosts: all\n  gather_facts: no\n  tasks:\n    - name: 0. Konfigurasi IP\n      community.routeros.command:\n        commands:\n          - /ip address add address={{ new_ip }} interface=ether2";
   
   let alerts = [];
-  let status = "SISTEM SIAP";
+  let status = "SYSTEM READY";
   let isLoading = false;
 
   onMount(() => {
-    const socket = io('http://localhost:5000');
-    socket.on('network-alert', (data) => {
-      alerts = [data, ...alerts];
-      if(data.type === "SECURITY") {
-         setTimeout(() => {
-           alerts = alerts.filter(a => a !== data);
-         }, 5000);
-      }
-    });
+  const socket = io('http://localhost:5000');
+  
+  socket.on('network-alert', (data) => {
+    alerts = [data, ...alerts];
   });
+});
 
   async function handleDeploy() {
     isLoading = true;
-    status = "SINKRONISASI KE REPOSITORY...";
+    status = "SYNCHRONIZED TO REPOSITORY...";
     try {
       const res = await fetch('http://localhost:5000/api/save-and-deploy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hosts: hostsContent, yaml: yamlContent })
       });
-      status = res.ok ? "PIPELINE BERHASIL DIJALANKAN" : "GAGAL DEPLOY";
+      status = res.ok ? "PIPELINE SUCCESSFULLY RUN" : "DEPLOY FAILED";
     } catch (e) {
-      status = "ERROR KONEKSI BACKEND";
+      status = "BACKEND CONNECTION ERROR";
     } finally {
       isLoading = false;
     }
@@ -46,23 +42,13 @@
       <div class="bg-white px-3 py-1 rounded-sm">
         <span class="text-[#ED1C24] font-black italic text-xl">Telkom</span>
       </div>
-      <h1 class="text-white font-bold tracking-widest text-sm uppercase">NetDevOps Control Center</h1>
+      <h1 class="text-white font-bold tracking-widest text-sm uppercase">NetDevOps Automation Pipeline</h1>
     </div>
     <div class="flex items-center gap-3">
       <div class="h-2 w-2 rounded-full bg-green-400 animate-pulse"></div>
       <span class="text-white text-[10px] font-bold tracking-widest uppercase">{status}</span>
     </div>
   </header>
-
-  <div class="fixed top-24 right-6 z-50 space-y-3 w-80">
-    {#each alerts.filter(a => a.type === "SECURITY") as alert}
-      <div class="bg-white border-l-8 border-[#ED1C24] p-4 shadow-2xl rounded-r-xl animate-bounce-short">
-        <p class="text-[10px] font-black text-[#ED1C24] mb-1 uppercase tracking-tighter">Security Alert</p>
-        <p class="text-xs font-bold text-slate-800 leading-tight">{alert.message}</p>
-        <p class="text-[9px] text-slate-400 mt-2">{alert.time} • Src: {alert.source}</p>
-      </div>
-    {/each}
-  </div>
 
   <main class="p-8 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
     
@@ -74,8 +60,7 @@
         
         <div class="bg-[#0F172A] p-6 rounded-2xl border border-slate-800 flex justify-between items-center mb-8">
           <div>
-            <p class="text-white font-bold text-lg italic">MikroTik - Branch R1</p>
-            <p class="text-xs text-blue-400 font-mono tracking-widest">ID: TELKOM-R1-2026</p>
+            <p class="text-white font-bold text-lg italic">MikroTik - R1</p>
           </div>
           <button on:click={handleDeploy} disabled={isLoading} class="bg-[#ED1C24] hover:bg-[#C1121F] px-10 py-3 rounded-xl font-black text-xs text-white uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:bg-slate-700">
             {isLoading ? 'DEPLOYING...' : 'PUSH CONFIG'}
@@ -121,7 +106,7 @@
              <p class="text-slate-300 mt-1 pl-2">{a.message}</p>
            </div>
         {:else}
-           <p class="text-slate-700 italic text-center mt-20 uppercase tracking-widest opacity-50">Menunggu Log MikroTik...</p>
+           <p class="text-slate-700 italic text-center mt-20 uppercase tracking-widest opacity-50">Waiting for MikroTik Log...</p>
         {/each}
       </div>
     </div>
