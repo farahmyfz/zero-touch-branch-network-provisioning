@@ -50,6 +50,14 @@
         commands:
           - /ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade
 
+    - name: 6.5 Konfigurasi DHCP Server untuk LAN
+      community.routeros.command:
+        commands:
+          - /ip pool add name=pool-lan ranges=192.168.10.10-192.168.10.100
+          - /ip dhcp-server add name=server-lan interface=ether2 address-pool=pool-lan disabled=no
+          - /ip dhcp-server network add address=192.168.10.0/24 gateway=192.168.10.1 dns-server=8.8.8.8
+      ignore_errors: true
+
     - name: 7. Pengujian/Validasi Koneksi (Ping ke DNS Google)
       community.routeros.command:
         commands:
