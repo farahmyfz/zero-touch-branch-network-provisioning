@@ -1,92 +1,9 @@
----
-- name: Fase 3 - Automasi Konfigurasi Dasar dan Layanan
-  hosts: router
-  gather_facts: false
-
+--- 
+- name: Fase 3 Konfigurasi...
+  hosts: all
+  gather_facts: no
   tasks:
-    - name: 0. Konfigurasi IP Interface
+    - name: 0. Konfigurasi IP
       community.routeros.command:
         commands:
-          - /ip address add address=192.168.11.10/24 interface=ether1 comment="WAN"
-          - /ip address add address=192.168.10.1/24 interface=ether2 comment="LAN_to_R2"
-      ignore_errors: true
-
-    - name: 1. Mengubah Hostname
-      community.routeros.command:
-        commands:
-          - /system identity set name="{{ inventory_hostname }}"
-
-    - name: 2. Konfigurasi DNS Server
-      community.routeros.command:
-        commands:
-          - /ip dns set servers=8.8.8.8,8.8.4.4 allow-remote-requests=yes
-
-    - name: 3. Konfigurasi NTP Client
-      community.routeros.command:
-        commands:
-          - /system ntp client set enabled=yes servers=0.id.pool.ntp.org,1.id.pool.ntp.org
-
-    - name: 4. Membuat User Management Baru (Keamanan)
-      community.routeros.command:
-        commands:
-          - /user add name=netdevops password=amanaman group=full
-      ignore_errors: true
-
-    - name: 5. Konfigurasi Routing (Default Route ke Internet)
-      community.routeros.command:
-        commands:
-          - /ip route add dst-address=0.0.0.0/0 gateway=192.168.11.1
-      ignore_errors: true
-
-    - name: 5.5 Tambahkan Rute ke LAN R2 via WAN
-      community.routeros.command:
-        commands:
-          - /ip route add dst-address=192.168.20.0/24 gateway=192.168.11.153 comment="Rute ke R2"
-      ignore_errors: true
-
-    - name: 6. Konfigurasi NAT/Firewall (Masquerade)
-      community.routeros.command:
-        commands:
-          - /ip firewall nat add chain=srcnat out-interface=ether1 action=masquerade
-
-    - name: 7. Pengujian/Validasi Koneksi (Ping ke DNS Google)
-      community.routeros.command:
-        commands:
-          - /ping 8.8.8.8 count=4
-      register: hasil_ping
-
-    - name: 8. Menampilkan Hasil Validasi di Terminal
-      debug:
-        msg: "{{ hasil_ping.stdout_lines }}"
-
-    - name: 9. Konfigurasi SNMP (Monitoring)
-      community.routeros.command:
-        commands:
-          - /snmp set enabled=yes contact="Admin NetDevOps" location="Lab Data Center"
-
-    - name: 10. Konfigurasi Syslog (Remote Logging)
-      community.routeros.command:
-        commands:
-          - /system logging action set [find name="remote"] target=remote remote=192.168.10.10 remote-port=5140
-          - /system logging add action=remote topics=info
-          - /system logging add action=remote topics=error
-          - /system logging add action=remote topics=warning
-      ignore_errors: true
-
-    - name: 11. Menarik konfigurasi (Stdout Mode)
-      community.routeros.command:
-        commands:
-          - /export
-      register: hasil_export
-
-    - name: 11.5 Memastikan folder backup ada
-      ansible.builtin.file:
-        path: "./backups"
-        state: directory
-      delegate_to: localhost
-
-    - name: 12. Menyimpan hasil export ke laptop
-      ansible.builtin.copy:
-        content: "{{ hasil_export.stdout[0] }}"
-        dest: "./backups/backup_{{ inventory_hostname }}_{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}.rsc"
-      delegate_to: localhost
+          - /ip address add address={{ new_ip }} interface=ether2
