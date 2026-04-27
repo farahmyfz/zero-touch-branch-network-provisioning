@@ -9,7 +9,6 @@
         commands:
           - /ip address add address=192.168.11.10/24 interface=ether1 comment="WAN"
           - /ip address add address=192.168.10.1/24 interface=ether2 comment="LAN_to_R2"
-      ignore_errors: true
           - /ip address add address=192.168.10.135/24 interface=ether4 comment="LAN_to_R2"
       ignore_errors: true
 
