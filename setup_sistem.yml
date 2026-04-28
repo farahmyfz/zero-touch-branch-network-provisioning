@@ -7,11 +7,11 @@
     - name: 0. Konfigurasi IP Interface
       community.routeros.command:
         commands:
-          - /ip address remove [find interface=ether3]
-
           - /ip address add address=192.168.11.10/24 interface=ether1 comment="WAN"
           - /ip address add address=192.168.10.1/24 interface=ether2 comment="LAN_to_R2"
-          - /ip address add address=192.168.10.100/24 interface=ether3 comment="CLIENT"
+          - /ip address add address=192.168.10.20/24 interface=ether3 comment="Cline"
+          - /ip address add address=192.168.10.30/24 interface=ether4 comment="Cline"
+          - /ip address add address=192.168.10.40/24 interface=ether5 comment="Cline"
       ignore_errors: true
 
     - name: 1. Mengubah Hostname
