@@ -9,7 +9,7 @@
         commands:
           - /ip address add address=192.168.11.10/24 interface=ether1 comment="WAN"
           - /ip address add address=192.168.10.1/24 interface=ether2 comment="LAN_to_R2"
-          - /ip address add address=192.168.10.200/24 interface=ether4 comment="CLIENT"
+          - /ip address add address=192.168.10.234/24 interface=ether5 comment="CLIENT"
       ignore_errors: true
   
     - name: 1. Mengubah Hostname
